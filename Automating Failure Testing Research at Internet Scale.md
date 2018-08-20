@@ -13,6 +13,7 @@
 ![](https://github.com/elithnever/paperreading/blob/master/2018-08-20%20at%206.47%20PM.png)
 
 以这个图所示的服务为例, 所有的调用路径一共有2的5次方, 也就是32条, 通过每次调用产生的正确或者错误结果, 来求解这个系统的关键路径. 文章中使用Boolean编码来形式化整个过程. 以下图为例说明:
+
 ![](https://github.com/elithnever/paperreading/blob/master/2018-08-20%20at%206.49%20PM.png)
 1. 每行代表产生正确结果的必要条件
 2. 行与行之间代表可以产生结果的并行条件. 也就是说单独运行每行都可以产生正确的结果.
