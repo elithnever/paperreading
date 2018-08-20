@@ -7,13 +7,13 @@
 
 这篇文章反其道而行之. 假设我们已经掌握了整体系统的所有信息, 当获取到正确的结果之后, 我们反问正确的结果是怎么获取到的, 言外之意就是如何获取不到正确的结果? 通过不断的追问, 我们可以揭示出各种不同的冗余路径来获取正确的结果. 这些路径就是我们可以考虑注入故障的地方, 叫做lineage-driven fault injection(LDFI).
 
-(img)
+![](https://github.com/elithnever/paperreading/blob/master/2018-08-20%20at%206.46%20PM.png)
 
 ## Lineage-driven Fault Injection
-(img)
+![](https://github.com/elithnever/paperreading/blob/master/2018-08-20%20at%206.47%20PM.png)
 
 以这个图所示的服务为例, 所有的调用路径一共有2的5次方, 也就是32条, 通过每次调用产生的正确或者错误结果, 来求解这个系统的关键路径. 文章中使用Boolean编码来形式化整个过程. 以下图为例说明:
-(img)
+![](https://github.com/elithnever/paperreading/blob/master/2018-08-20%20at%206.49%20PM.png)
 1. 每行代表产生正确结果的必要条件
 2. 行与行之间代表可以产生结果的并行条件. 也就是说单独运行每行都可以产生正确的结果.
 
