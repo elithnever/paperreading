@@ -3,7 +3,7 @@
 SuRF这篇论文是2018年SIGMOD唯一一篇best paper, 论文的核心思想是实现了一种叫做FST(Fast Succinct Trie)的数据结构, 既可以享受Succinct数据结构的高压缩特性, 还可以实现快速的point查询和range查询. FST本质上是一种高度优化之后的Trie树, 其实可以实现静态词典的数据结构. 论文中使用FST替换掉了rocksdb的bloomfilter, 在相同存储空间的情况下获得了查询性能的提升.
 
 ## Trie树
-![image](http://note.youdao.com/yws/res/214/BE0B03F853D546FEB6C53356F1BD0C96)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/AF7BBDFFED774B76BDE7CCC902C9FA64?ynotemdtimestamp=1535524658253)
 
 上图是维基百科中介绍的Trie树的例子. Trie树又称前缀树或者字典树, 是一种可以保存静态kv数据的数据结构. Trie树包括以下几个特点:
    1. 一个节点的所有子孙节点具有相同的前缀
@@ -13,7 +13,7 @@ SuRF这篇论文是2018年SIGMOD唯一一篇best paper, 论文的核心思想是
 
 ## Level-Ordered Unary Degree Sequence(LOUDS)
 
-![image](http://note.youdao.com/yws/res/227/15C129E9C4B44FFEA41C9715F3BC09E6)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/15C129E9C4B44FFEA41C9715F3BC09E6?ynotemdtimestamp=1535524348126)
 
 对于一个树来说, 基于succinct的思路可以让树的存储空间接近信息论的下界. 上图将一个树的每个节点进行编码, 节点的编号按照层数生成. 编码规则就是对于一个节点来说, 将孩子节点标记为1, 最后标记为0. 比如对于节点3来说, 其编码就是1110. 按照节点编号的顺序, 生成一个bit序列从而完成整个树结构的编码(不包含value).
 
@@ -34,7 +34,7 @@ SuRF这篇论文是2018年SIGMOD唯一一篇best paper, 论文的核心思想是
 ## Fast Succinct Trie
 基于LOUDS编码方式, FST对LOUDS进行了进一步压缩, 下图介绍了基本的压缩方法:
 
-![image](http://note.youdao.com/yws/res/289/5F2F376364BD4898A2A74DCFC322F0DB)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/5F2F376364BD4898A2A74DCFC322F0DB?ynotemdtimestamp=1535524348126)
 
 FST将LOUDS分成了两层, 上层节点数量少, 使用LOUDS-Dense编码方式, 下层节点数多, 使用LOUDS-Sparse编码方式. 
 
@@ -68,7 +68,7 @@ trie树经过LOUDS-DS编码之后, 可以高效支持下面3个操作:
 
 虽然FST已经尽可能的使用最少的存储空间了, 但是我们仍然希望减少存储空间的占用, 进而让整个索引全部放在内存里, 为此引入了4种不同的Trie树的裁剪方式.
 
-![image](http://note.youdao.com/yws/res/403/3C7E9E50369849D3A73610E2133C6B9F)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/3C7E9E50369849D3A73610E2133C6B9F?ynotemdtimestamp=1535524348126)
 
 1.    Basic SuRF
 
@@ -88,7 +88,7 @@ FST是一个完整的索引结构, 可以存储全部的索引数据, 这种情�
 
 ## 性能测试
 
-![image](http://note.youdao.com/yws/res/472/1E68760A7EBE40B0A198F2547F831121)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/1E68760A7EBE40B0A198F2547F831121?ynotemdtimestamp=1535524348126)
 
 论文中使用了两组key的数据进行性能对比测试. 一组是由YCSB输出的64bit的整数, 另一组是由字符串组成的电子邮件地址, 其中整数的key有50M个, 电子邮件地址组成的key有25M个. 然后使用FST分别和B+tree, ART(Adaptive Radix Tree), C-ART进行比较, 因为latency和memory实际上是两个trade-off, 所以上面的对比图中定一个了一个关于latency和memory的代价函数, 图中对比的是代价函数.
 
@@ -96,18 +96,18 @@ FST是一个完整的索引结构, 可以存储全部的索引数据, 这种情�
 
 第二组实验对FST和其他几种succinct数据结构进行了对比, 可以看出来无论是memory使用还是latency都是最优的.
 
-![image](http://note.youdao.com/yws/res/481/F4B663C0E19846A28EF389B6F7E1F147)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/F4B663C0E19846A28EF389B6F7E1F147?ynotemdtimestamp=1535524348126)
 
 这幅图对比了SuRF不同模式和bloomfilter的FPR对比, 一般情况下, 在pointquery下, SuRF比bloomfilter还是要差一些. 对于email这组测试数据, range query的FPR比较高(20%~30%之间了).
 
-![image](http://note.youdao.com/yws/res/488/56DD3D8B5EED476E9D659C0511D38832)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/56DD3D8B5EED476E9D659C0511D38832?ynotemdtimestamp=1535524348126)
 
 这幅图对比了SuRF和bloomfilter的吞吐, 吞吐实际上指的是查询速度, 大家可以从这里大概评估出SuRF的吞吐数量级.
 
 ## 应用场景
 试想如果我们把rocksdb的所有key都复制一份存储在SuRF中的话(不存储value), 那么SuRF起的作用不就和bloomfilter一样了么, 同时还可以支持range query了. 为此论文将SuRF应用在了Rocsdb中, 替换了bloomfilter, 并且进行了对比测试(占用的空间和bloomfiler相同). 测试程序运行在普通的SSD上, 下图是性能对比数据:
 
-![image](http://note.youdao.com/yws/res/505/BD0D0D24ED964972821A72E3AD0AA599)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/BD0D0D24ED964972821A72E3AD0AA599?ynotemdtimestamp=1535524348126)
 
 从性能数据上看, 对于point query, SuRF的效果比bloomfilter相比还是差一些, 但是在range query下, 效果比bloomfilter要好很多了, IO减少的次数还是非常明显的.
 
