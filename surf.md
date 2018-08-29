@@ -88,19 +88,24 @@ FST是一个完整的索引结构, 可以存储全部的索引数据, 这种情�
 
 ## 性能测试
 
-![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/1E68760A7EBE40B0A198F2547F831121?ynotemdtimestamp=1535524348126)
+1.    FST和基于指针的索引结构性能对比
+
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/F5C0B876BAB84C3C8C0444EB704AAFA6?ynotemdtimestamp=1535525810393)
 
 论文中使用了两组key的数据进行性能对比测试. 一组是由YCSB输出的64bit的整数, 另一组是由字符串组成的电子邮件地址, 其中整数的key有50M个, 电子邮件地址组成的key有25M个. 然后使用FST分别和B+tree, ART(Adaptive Radix Tree), C-ART进行比较, 因为latency和memory实际上是两个trade-off, 所以上面的对比图中定一个了一个关于latency和memory的代价函数, 图中对比的是代价函数.
 
-![image](http://note.youdao.com/yws/res/476/6DC019FD8F9644139A713A3ACE48F583)
+2.    FST和其他succinct结构的性能对比
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/20A4CE6CCFA54721A3CFF3F308A408C4?ynotemdtimestamp=1535525810393)
 
-第二组实验对FST和其他几种succinct数据结构进行了对比, 可以看出来无论是memory使用还是latency都是最优的.
+第二组实验对FST和其他几种succinct数据结构进行了对比, 可以看出来无论是memory使用还是latency FST都是最优的.
 
-![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/F4B663C0E19846A28EF389B6F7E1F147?ynotemdtimestamp=1535524348126)
+3.    SuRF和bloomfilter的性能对比
+
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/68BF960CC814437288EEE3154B2D4181?ynotemdtimestamp=1535525810393)
 
 这幅图对比了SuRF不同模式和bloomfilter的FPR对比, 一般情况下, 在pointquery下, SuRF比bloomfilter还是要差一些. 对于email这组测试数据, range query的FPR比较高(20%~30%之间了).
 
-![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/56DD3D8B5EED476E9D659C0511D38832?ynotemdtimestamp=1535524348126)
+![image](http://note.youdao.com/yws/public/resource/fbcfe09e73906ae17ea9279fe69a7e4d/57608D08022845FBBEDA7B9ADB54937B?ynotemdtimestamp=1535525810393)
 
 这幅图对比了SuRF和bloomfilter的吞吐, 吞吐实际上指的是查询速度, 大家可以从这里大概评估出SuRF的吞吐数量级.
 
