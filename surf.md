@@ -121,3 +121,7 @@ SuRF的代码和rocksdb的集成代码已经在github上[开源](https://github.
 
 ## 总结
 为了便于理解SuRF, 作者设计了一个[demo website](https://www.rangefilter.io/), 配合demo会更容易理解. 读完这篇论文之后, 最大的感受是之前的数据结构白学了! 在1989年就提出的LOUDS编码方法, 竟然完全不知道, 事实上, LOUDS已经在MIT的高级数据结构课程里了([youtube上有公开课视频](https://www.youtube.com/watch?reload=9&v=3Y2weLDiUWw/)). 作者在LOUDS的基础上设计了FST, 并且进行了相应的工程优化最终形成了SuRF, 无论是思路上还是效果上都非常出众, 能获得best paper还是很有道理的. 论文中的测试数据表明, 在和bloomfilter存储空间相同的条件下, point query的性能还是有所下降, 不过bloom filter本身占用的空间不大, 在我们的生产环境中, bloomfilter都是常驻内存的, 所以我觉得可以适当提升SuRF的空间占用来弥补point query的性能下降.
+
+## 参考文章
+- [SuRF: 基于Fast Succinct Tries的Range Query Filter](https://blog.intzero.net/algorithm/database/SuRF.html)
+- [SuRF: 一个优化的 Fast Succinct Tries](https://www.jianshu.com/p/b3529729ee94)
