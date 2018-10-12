@@ -93,7 +93,7 @@ CRDT比较好的满足了最终一致性并且无协调性, 但是设计一个�
 论文中和一些优秀的KV程序库以及Redis/Casandra进行了性能对比, 给出的实验数据也非常有冲击力, 数据可以参见下面的图, 详细测试数据的分析就不翻译了, 大家还是阅读原文吧.
 
 ![image](http://note.youdao.com/yws/public/resource/e772e5a10c18b98b33880d107b8b89e4/484209AFF3C54F03B08F14ECEFE7DEE4?ynotemdtimestamp=1539347537645)
-![image](http://note.youdao.com/yws/public/resource/e772e5a10c18b98b33880d107b8b89e4/4ACEAEAD92CC48508485D925AFAC51B8?ynotemdtimestamp=1539347537645)
+![image](http://note.youdao.com/yws/public/resource/e772e5a10c18b98b33880d107b8b89e4/4ACEAEAD92CC48508485D925AFAC51B8?ynotemdtimestamp=1539348759862)
 
 ## 总结
 经过数十篇论文之后, 终于基本理解了Anna的核心设计思想了. Anna利用具备lattice属性的数据结构来构建KVS的思想真得让我脑洞大开, 而且仅仅用2000行C++代码就完成了核心功能的实现, 让我们再次感受到了成熟理论的威力. 在工程方面, Anna没什么特别让人想不到的技术点, 架构也非常简单并且容易理解. 不过距离生成环境可用还需要大量的工程工作, 让我们期待Berkeley RISELab能否像孵化Spark一样, 产出另一个工业级产品吧.
