@@ -57,7 +57,7 @@ Bloom和Overlog相比是一个纯粹的声明式编程语言, 在dedalus的基�
 
 那么这和分布式存储好像还是没有扯上关系, 下面重点来了:
 
-http://note.youdao.com/yws/public/resource/e772e5a10c18b98b33880d107b8b89e4/1306D5F58EAF458CB68405090E100254?ynotemdtimestamp=1539348759862
+![image](http://note.youdao.com/yws/public/resource/e772e5a10c18b98b33880d107b8b89e4/1306D5F58EAF458CB68405090E100254?ynotemdtimestamp=1539348759862)
 
 这幅图里使用bloom定义了通用KV存储系统的协议或者说接口, 那么基于这个接口, 就可以实现更复杂的KV存储系统了. 论文里给出了单节点KV存储系统和多节点KV存储系统的代码. 下图是单节点KV存储系统的实现代码:
 
