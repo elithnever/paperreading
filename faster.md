@@ -3,7 +3,7 @@
 
 ## 系统架构
 
-![image](http://note.youdao.com/yws/res/14063/9B50326C0E194514AB3C1EA8C2CC1637)
+![image](http://note.youdao.com/yws/public/resource/dbfa5865fb7aa9f2608724e2d9e45e63/9B50326C0E194514AB3C1EA8C2CC1637?ynotemdtimestamp=1549966707483)
 
 先从系统架构上整体看一下Faster的设计逻辑. 首先, Faster有一个基于hash表的内存index结构, 然后index指向一条一条record, 每条record离存放的就是key-value数据. 这些record由3类allocator分配, 分别是in-memory allocator, append-log allocator和hybird-log allocator. 整个Faster尽可能采用无锁设计, 减少锁互斥带来的开销, 提供了Read, Upsert, Read-Modify-Write, Delete这4种编程接口. 从整体架构上看, Faster核心就是一个无锁hash index加上一组不同的allocator, 没什么秘密而言, 不过声称每秒1.6亿次op的hash表, 充分体现了faster的工程能力, 下面详细看看每个部分.
 
@@ -29,24 +29,24 @@
 ## The Faster Hash Index
 hash index是faster的关键组件之一, faster里实现了一个支持并发, latch-free, 可扩展, 可以resize的hash index. hash index由一个cache-aligned数组组成, 每个bucket为64byte, 下图是hash bucket的结构. 每个hash bucket由7个8 byte的entry和一个8 byte的pointer entry组成, 每个overflow bucket仍然保持cache-align特性, 并且由内存alloctor提供内存空间. 每个entry由tag(15 bit)和address(48bit)组成, 最高位如果是0, 表示这是一个空的slot. tag用来降低hash碰撞, 很多64bit的机器不需要使用64bit的地址, 比如intel是48bit. 关于hash index的操作, 需要特别注意的是当entry不存在的时候, 不能直接使用CAS来插入entry, 论文中给出了一个例子, 解法就是利用最高位的tentative bit, 实现两阶段insert来解决问题, 详细算法可以参考论文. 同时hash index基于Epoch机制和多个状态实现了相对lower cost的resize操作, 详细的算法在论文附录B中描述了.
 
-![image](http://note.youdao.com/yws/res/14361/CC36503376FF4B53BF85E18AF5FE6FE6)
+![image](http://note.youdao.com/yws/public/resource/dbfa5865fb7aa9f2608724e2d9e45e63/CC36503376FF4B53BF85E18AF5FE6FE6?ynotemdtimestamp=1549966707483)
 
 虽然hash index在论文中描述篇幅不多, 不过实现的如此高效, 我觉得还是非常值得学习的, 大家可以对着源码一起阅读和理解.
 
 ## In-memory Allocator
 有了hash index, 再结合一个简单的memory allocator, 比如jemalloc, 就可以形成简单的in-memory key value store了. 不过hash index只能保证自己是多线程安全的, in-memory allocator还需要保证自己也是多线程安全的, 下图就是一个多线程竞争产生的潜在问题, 论文中通过two-phase insert配合tentative bit解决了. 算法类似于乐观锁的机制, 论文里有详细描述, 这里就不仔细说了.
 
-![image](http://note.youdao.com/yws/res/14482/A8E9503AB52B448AA60BBF8261913E0A)
+![image](http://note.youdao.com/yws/public/resource/dbfa5865fb7aa9f2608724e2d9e45e63/A8E9503AB52B448AA60BBF8261913E0A?ynotemdtimestamp=1549966707483)
 
 ## Log Allocator
 只有in-memory allocator还是显得比较单薄, 为此论文中借鉴类似log-structured tree的思路, 设计了一个log allocator来实现数据持久化功能. 数据持久化之后, hash index记录的地址就不再是内存的物理地址而是磁盘的逻辑地址了. log allocator的核心设计思想和lsm-tree非常类似, 如下图所示, 内存中维护一个大的循环队列, 所有insert和update操作都会在循环队列中append, 循环队列划分成一个一个的page frame, 方便数据持久化. 随着队列的head offset和tail offset的变化, 队列中的数据被异步的刷新到磁盘中, 这里仍然采用了epoch framework来保证多线程安全. 同样和lsm-tree类似, 删除操作仅仅是插入了一个墓碑, 配合GC机制来实现空闲磁盘空间的回收利用.
 
-![image](http://note.youdao.com/yws/res/14494/BD91790946374D55A8750CE3A7F1E0FA)
+![image](http://note.youdao.com/yws/public/resource/dbfa5865fb7aa9f2608724e2d9e45e63/BD91790946374D55A8750CE3A7F1E0FA?ynotemdtimestamp=1549966707483)
 
 ## HybridLog
 log allocator的缺点就是lsm-tree的缺点, 存在写放大问题, 对于update密集型负载来说, 不是最优化的方案. 于是论文又提出了HybridLog的设计思路对纯log allocator进行优化. 优化思路也比较直观, 和lsm-tree的设计思路类似, 对内存中的循环队列, 划分成mutable和immutable两大部分, mutable部分的update操作不在写log了, 而是直接进行原地的update. immutable部分和原来的逻辑类似, 无需修改. 不过论文中有很多细节需要考虑, 包括如何保证单调性, 如何recovery以及多线程安全等.
 
-![image](http://note.youdao.com/yws/res/14513/457E54FEAB52457E83EA28E4E8A03B4C)
+![image](http://note.youdao.com/yws/public/resource/dbfa5865fb7aa9f2608724e2d9e45e63/457E54FEAB52457E83EA28E4E8A03B4C?ynotemdtimestamp=1549966707483)
 
 ## 总结
 我认为Faster论文中比较值得借鉴的是高速hash index和epoch framework的设计思路, 虽然不需要多么高深的理论, 但是工程复杂度还是挺高的, 如此高效的设计值得学习. 其他部分我个人认为不太实用, 工程实现的复杂度比较高, 需要考虑很多corner case, 不如复用已有成熟的存储引擎比较好, 特别是核心思路和lsm-tree非常接近, 当然很多细节可能需要性能调优.
